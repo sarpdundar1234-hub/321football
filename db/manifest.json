@@ -1,0 +1,9 @@
+{
+ "schema": 2,
+ "dbVersion": 2026110217,
+ "file": "football_db-2026110217.json",
+ "bytes": 774207,
+ "players": 19569,
+ "clubs": 193,
+ "contentHash": "1e778c93860b8812e7848e6b1128171147041b7d4d35106b46b3ab736c0beefd"
+}
