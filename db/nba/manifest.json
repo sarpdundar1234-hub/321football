@@ -1,0 +1,9 @@
+{
+ "schema": 2,
+ "dbVersion": 2026110300,
+ "file": "nba_db-2026110300.json",
+ "bytes": 254631,
+ "players": 3107,
+ "clubs": 30,
+ "contentHash": "3e1533c4830f44f2dd475d58a097c8cf53330b54428ab018e1d726f7ca566ea1"
+}

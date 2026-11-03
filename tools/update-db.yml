@@ -1,0 +1,93 @@
+# GitHub Action for the 321football site repo (lives at .github/workflows/update-db.yml).
+# Every Monday it rebuilds the player database from the public sources and, if anything
+# changed, publishes db/manifest.json + a new db file. The app picks it up on next launch.
+name: Update player database
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"   # Mondays 06:17 UTC
+  workflow_dispatch:        # "Run workflow" button for a manual refresh
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-db
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build dependencies
+        run: pip install -r tools/requirements.txt
+
+      - name: Download sources and build
+        env:
+          WORK: ${{ runner.temp }}/data
+          OUT: ${{ runner.temp }}/football_db.json
+        run: bash tools/fetch_data.sh
+
+      - name: Publish if changed
+        run: python tools/publish_db.py "${{ runner.temp }}/football_db.json" .
+
+      - name: Commit
+        run: |
+          git config user.name "321 Football bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add db
+          if git diff --cached --quiet; then
+            echo "No changes to publish."
+          else
+            git commit -m "Update player database"
+            git push
+          fi
+
+  # 321 Gridiron, 321 Hoops and 321 College Football. Runs after the soccer job so the two
+  # commits never race; each sport publishes to its own folder (db/nfl, db/nba, db/cfb).
+  update-us:
+    needs: update
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build dependencies
+        run: pip install -r tools/requirements.txt
+
+      - name: Download sources and build
+        env:
+          WORK: ${{ runner.temp }}/us-data
+          OUT: ${{ runner.temp }}/us-out
+        run: bash tools/fetch_us_data.sh all
+
+      - name: Publish if changed
+        run: |
+          for s in nfl nba cfb; do
+            python tools/publish_db.py "${{ runner.temp }}/us-out/${s}_db.json" . "$s" || echo "::warning::$s not published"
+          done
+
+      - name: Commit
+        run: |
+          git config user.name "321 Football bot"
+          git config user.email "actions@users.noreply.github.com"
+          git pull --rebase --autostash --quiet
+          git add db
+          if git diff --cached --quiet; then
+            echo "No changes to publish."
+          else
+            git commit -m "Update US player databases"
+            git push
+          fi

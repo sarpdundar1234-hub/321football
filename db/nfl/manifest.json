@@ -1,0 +1,9 @@
+{
+ "schema": 2,
+ "dbVersion": 2026110300,
+ "file": "nfl_db-2026110300.json",
+ "bytes": 984295,
+ "players": 15019,
+ "clubs": 32,
+ "contentHash": "1854b55b12f297e6b80e9e130066b36f78d44bd59c5525bf4ed4634b164e4f93"
+}
