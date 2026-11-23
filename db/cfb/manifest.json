@@ -1,9 +1,9 @@
 {
  "schema": 2,
- "dbVersion": 2026111608,
- "file": "cfb_db-2026111608.json",
- "bytes": 1359956,
+ "dbVersion": 2026112307,
+ "file": "cfb_db-2026112307.json",
+ "bytes": 1360115,
  "players": 19924,
  "clubs": 170,
- "contentHash": "5fe0ae2a148301d5e87e132a6eb4116c1257058855a3f16a4b024227cbe015de"
+ "contentHash": "b3cce887fa1cc87c4521a0a8adcb562438b547689ffb8e43ee155fa5fc6651b7"
 }
